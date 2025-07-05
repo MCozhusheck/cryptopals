@@ -1,5 +1,6 @@
 mod fixed_xor;
 mod hex_to_base64;
+mod repeating_key_xor;
 mod single_byte_xor;
 mod utils;
 

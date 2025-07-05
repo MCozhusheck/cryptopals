@@ -1,6 +1,7 @@
 use crate::utils::{Result, XOR, from_hex, from_hex_lines};
 use std::{collections::HashMap, path::Path};
 
+#[allow(dead_code)]
 pub fn single_byte_xor_decode(hex_input: &str, key: u8) -> Vec<u8> {
     let bytes = hex::decode(hex_input).expect("Invalid hex input");
     bytes.iter().map(|&b| b ^ key).collect()
