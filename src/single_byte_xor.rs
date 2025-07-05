@@ -1,13 +1,5 @@
 use crate::utils::{Result, XOR, from_hex, from_hex_lines};
-use std::{
-    collections::HashMap,
-    path::{self, Path},
-};
-
-const ENGLISH_LETTER_FREQ: [f64; 26] = [
-    8.12, 1.49, 2.78, 4.25, 12.02, 2.23, 2.02, 6.09, 6.97, 0.15, 0.77, 4.03, 2.41, 6.75, 7.51,
-    1.93, 0.10, 5.99, 6.33, 9.06, 2.76, 0.98, 2.36, 0.15, 1.97, 0.07,
-];
+use std::{collections::HashMap, path::Path};
 
 pub fn single_byte_xor_decode(hex_input: &str, key: u8) -> Vec<u8> {
     let bytes = hex::decode(hex_input).expect("Invalid hex input");
@@ -109,7 +101,7 @@ pub fn solve_challenge_3() -> Result<()> {
 }
 
 pub fn solve_challenge_4() -> Result<()> {
-    let path = Path::new("data/s1c4_input.txt");
+    let path = Path::new("src/data/s1c4_input.txt");
     let lines = from_hex_lines(path)?;
     let result = lines
         .into_iter()
