@@ -1,3 +1,5 @@
+use crate::aes_ecb::detect_ecb;
+
 mod aes_ecb;
 mod fixed_xor;
 mod hex_to_base64;
@@ -11,4 +13,5 @@ fn main() {
     single_byte_xor::solve_challenge_3().unwrap();
     single_byte_xor::solve_challenge_4().unwrap();
     println!("Decrypted file: {}", aes_ecb::decrypt_file());
+    detect_ecb();
 }

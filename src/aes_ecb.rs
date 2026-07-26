@@ -1,3 +1,5 @@
+use std::collections::{HashMap, HashSet};
+
 use base64::{Engine as _, engine::general_purpose};
 use openssl::symm::{Cipher, Crypter, Mode};
 
@@ -36,6 +38,27 @@ pub fn decrypt_file() -> String {
 
     let decrypted = decrypt_ecb(key, &ciphertext);
     String::from_utf8(decrypted).unwrap()
+}
+
+pub fn detect_ecb() -> Vec<usize> {
+    let input = include_str!("data/s1c8_input.txt");
+    let input: Vec<Vec<u8>> = input
+        .lines()
+        .map(|line| hex::decode(line).expect("invalid hex"))
+        .collect();
+    let mut ecb_lines: Vec<usize> = vec![];
+
+    for (line, cipher_text) in input.iter().enumerate() {
+        let mut seen: HashSet<&[u8]> = HashSet::new();
+        for block in cipher_text.chunks_exact(16) {
+            if !seen.insert(block) {
+                ecb_lines.push(line);
+            }
+        }
+    }
+
+    println!("lines with AES in ECB mod: {:?}", ecb_lines);
+    ecb_lines
 }
 
 #[cfg(test)]
