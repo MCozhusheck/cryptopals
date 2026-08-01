@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use base64::{Engine as _, engine::general_purpose};
 use openssl::symm::{Cipher, Crypter, Mode};
@@ -40,30 +40,31 @@ pub fn decrypt_file() -> String {
     String::from_utf8(decrypted).unwrap()
 }
 
-pub fn detect_ecb() -> Vec<usize> {
-    let input = include_str!("data/s1c8_input.txt");
-    let input: Vec<Vec<u8>> = input
-        .lines()
-        .map(|line| hex::decode(line).expect("invalid hex"))
-        .collect();
-    let mut ecb_lines: Vec<usize> = vec![];
+pub fn detect_ecb(ciphertext: &[u8]) -> bool {
+    let mut seen = HashSet::new();
 
-    for (line, cipher_text) in input.iter().enumerate() {
-        let mut seen: HashSet<&[u8]> = HashSet::new();
-        for block in cipher_text.chunks_exact(16) {
-            if !seen.insert(block) {
-                ecb_lines.push(line);
-            }
-        }
-    }
-
-    println!("lines with AES in ECB mod: {:?}", ecb_lines);
-    ecb_lines
+    ciphertext
+        .chunks_exact(Cipher::aes_128_ecb().block_size())
+        .any(|block| !seen.insert(block))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn detects_challenge_8_ecb_line() {
+        let ecb_lines: Vec<usize> = include_str!("data/s1c8_input.txt")
+            .lines()
+            .enumerate()
+            .filter_map(|(line, encoded)| {
+                let ciphertext = hex::decode(encoded).expect("challenge input should be valid hex");
+                detect_ecb(&ciphertext).then_some(line)
+            })
+            .collect();
+
+        assert_eq!(ecb_lines, vec![132]);
+    }
 
     #[test]
     fn test_aes_ecb_encrypt_decrypt() {
